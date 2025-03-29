@@ -1,0 +1,13 @@
+[1mdiff --git a/src/main/java/cju/parkinggo/parking/config/SwaggerConfig.java b/src/main/java/cju/parkinggo/parking/config/SwaggerConfig.java[m
+[1mindex 3d4f859..61c99b4 100644[m
+[1m--- a/src/main/java/cju/parkinggo/parking/config/SwaggerConfig.java[m
+[1m+++ b/src/main/java/cju/parkinggo/parking/config/SwaggerConfig.java[m
+[36m@@ -17,6 +17,6 @@[m [mpublic class SwaggerConfig {[m
+ [m
+         return new OpenAPI()[m
+                 .info(info)[m
+[31m-                .openapi("3.0.0"); // OpenAPI 버전 명시적으로 설정[m
+[32m+[m[32m                .openapi("3.0.0");[m
+     }[m
+ }[m
+\ No newline at end of file[m
