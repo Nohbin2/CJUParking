@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface ParkingAvailabilityRepository extends JpaRepository<ParkingAvailability, Long> {
-    Optional<ParkingAvailability> findByParkingId(Long parkingId);
+    Optional<ParkingAvailability> findByParking_Id(Long parkingId);
 }
