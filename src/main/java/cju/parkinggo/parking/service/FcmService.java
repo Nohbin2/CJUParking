@@ -41,7 +41,7 @@ public class FcmService {
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            System.out.println("FCM 응답: " + response.body().string());
+            System.out.println("\"주차장 알림\", \"근처에 빈자리가 생겼습니다!\"" + response.body().string());
         }
     }
 }
