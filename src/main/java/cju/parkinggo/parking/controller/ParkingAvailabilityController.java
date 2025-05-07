@@ -38,5 +38,12 @@ public class ParkingAvailabilityController {
     public List<ParkingAvailabilityDto> getAllParkingAvailability() {
         return availabilityService.getAll();
     }
+    @Operation(summary = "주차장 빈자리 정보 삭제", description = "특정 주차장의 빈자리 정보를 삭제합니다.")
+    @DeleteMapping("/api/parking/availability/{parkingId}")
+    public ResponseEntity<Void> deleteAvailability(@PathVariable Long parkingId) {
+        availabilityService.deleteParkingAvailability(parkingId);
+        return ResponseEntity.noContent().build();
+    }
+
 }
 

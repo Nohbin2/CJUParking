@@ -71,4 +71,10 @@ public class ParkingAvailabilityService {
                         a.getUpdatedAt()))
                 .collect(Collectors.toList());
     }
+    public void deleteParkingAvailability(Long parkingId) {
+        ParkingAvailability availability = availabilityRepository.findByParking_Id(parkingId)
+                .orElseThrow(() -> new RuntimeException("해당 주차장의 빈자리 정보가 없습니다."));
+        availabilityRepository.delete(availability);
+    }
+
 }
