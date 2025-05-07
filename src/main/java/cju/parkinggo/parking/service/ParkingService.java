@@ -55,4 +55,11 @@ public class ParkingService {
                 .map(p -> new ParkingDto(p.getId(), p.getName(), p.getLocation(), p.getTotalSpots()))
                 .collect(Collectors.toList());
     }
+    public void deleteParking(Long id) {
+        Parking parking = parkingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("주차장을 찾을 수 없습니다."));
+
+        parkingRepository.delete(parking);
+    }
+
 }

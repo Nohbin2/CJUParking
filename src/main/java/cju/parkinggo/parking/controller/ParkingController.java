@@ -2,14 +2,10 @@ package cju.parkinggo.parking.controller;
 
 import cju.parkinggo.parking.dto.ParkingDto;
 import cju.parkinggo.parking.service.ParkingService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -39,4 +35,12 @@ public class ParkingController {
     public List<ParkingDto> getAllParking() {
         return parkingService.getAllParking();
     }
+
+    @Operation(summary = "주차장 삭제", description = "주차장과 해당 주차장의 빈자리 정보를 함께 삭제합니다.")
+    @DeleteMapping("/api/parking/{id}")
+    public ResponseEntity<Void> deleteParking(@PathVariable Long id) {
+        parkingService.deleteParking(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
