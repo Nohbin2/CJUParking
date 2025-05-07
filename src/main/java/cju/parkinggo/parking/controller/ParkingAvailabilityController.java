@@ -38,12 +38,5 @@ public class ParkingAvailabilityController {
     public List<ParkingAvailabilityDto> getAllParkingAvailability() {
         return availabilityService.getAll();
     }
-    @Operation(summary = "주차장 빈자리 등록", description = "새로운 주차장의 빈자리 정보를 등록합니다.")
-    @PostMapping("/api/parking/availability")
-    public ResponseEntity<ParkingAvailabilityDto> createAvailability(
-            @RequestBody ParkingAvailabilityCreateDto dto) {
-        return ResponseEntity.ok(availabilityService.createParkingAvailability(dto));
-    }
-
 }
 
