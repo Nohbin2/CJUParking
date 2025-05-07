@@ -1,15 +1,12 @@
 package cju.parkinggo.parking.controller;
 
+import cju.parkinggo.parking.dto.ParkingAvailabilityCreateDto;
 import cju.parkinggo.parking.dto.ParkingAvailabilityDto;
 import cju.parkinggo.parking.service.ParkingAvailabilityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,4 +38,12 @@ public class ParkingAvailabilityController {
     public List<ParkingAvailabilityDto> getAllParkingAvailability() {
         return availabilityService.getAll();
     }
+    @Operation(summary = "주차장 빈자리 등록", description = "새로운 주차장의 빈자리 정보를 등록합니다.")
+    @PostMapping("/api/parking/availability")
+    public ResponseEntity<ParkingAvailabilityDto> createAvailability(
+            @RequestBody ParkingAvailabilityCreateDto dto) {
+        return ResponseEntity.ok(availabilityService.createParkingAvailability(dto));
+    }
+
 }
+

@@ -1,9 +1,12 @@
 package cju.parkinggo.parking.service;
 
+import cju.parkinggo.parking.dto.ParkingAvailabilityCreateDto;
 import cju.parkinggo.parking.dto.ParkingAvailabilityDto;
+import cju.parkinggo.parking.entity.Parking;
 import cju.parkinggo.parking.entity.ParkingAvailability;
 import cju.parkinggo.parking.repository.ParkingAvailabilityRepository;
 
+import cju.parkinggo.parking.repository.ParkingRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,11 +18,14 @@ public class ParkingAvailabilityService {
 
     private final ParkingAvailabilityRepository availabilityRepository;
     private final FcmService fcmService; // ✅ FCM 서비스 주입
+    private final ParkingRepository parkingRepository;
 
     public ParkingAvailabilityService(ParkingAvailabilityRepository availabilityRepository,
-                                      FcmService fcmService) {
+                                      FcmService fcmService,
+                                      ParkingRepository parkingRepository) {
         this.availabilityRepository = availabilityRepository;
         this.fcmService = fcmService;
+        this.parkingRepository = parkingRepository;
     }
 
     public ParkingAvailabilityDto getParkingAvailability(Long parkingId) {
@@ -68,4 +74,23 @@ public class ParkingAvailabilityService {
                         a.getUpdatedAt()))
                 .collect(Collectors.toList());
     }
+    public ParkingAvailabilityDto createParkingAvailability(ParkingAvailabilityCreateDto dto) {
+        Parking parking = parkingRepository.findById(dto.getParkingId())
+                .orElseThrow(() -> new RuntimeException("해당 ID의 주차장이 존재하지 않습니다."));
+
+        ParkingAvailability availability = new ParkingAvailability(
+                parking,
+                dto.getEmptySpots(),
+                LocalDateTime.now()
+        );
+
+        availabilityRepository.save(availability);
+
+        return new ParkingAvailabilityDto(
+                availability.getParking().getId(),
+                availability.getEmptySpots(),
+                availability.getUpdatedAt()
+        );
+    }
+
 }
