@@ -37,10 +37,9 @@ public class ParkingController {
     }
 
     @Operation(summary = "주차장 삭제", description = "주차장과 해당 주차장의 빈자리 정보를 함께 삭제합니다.")
-    @DeleteMapping("/api/parking/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteParking(@PathVariable Long id) {
         parkingService.deleteParking(id);
         return ResponseEntity.noContent().build();
     }
-
 }
