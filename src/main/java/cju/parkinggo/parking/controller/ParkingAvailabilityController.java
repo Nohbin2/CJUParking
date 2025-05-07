@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class ParkingAvailabilityController {
 
@@ -33,5 +35,10 @@ public class ParkingAvailabilityController {
             @Parameter(description = "업데이트할 빈자리 수", required = true) @RequestBody ParkingAvailabilityDto dto,
             @Parameter(description = "주차장 ID", required = true) @PathVariable Long parkingId) {
         return ResponseEntity.ok(availabilityService.updateParkingAvailability(parkingId, dto.getEmptySpots()));
+    }
+    @Operation(summary = "주차장 정보 목록 조회", description = "주차장 정보 목록 조회합니다.")
+    @GetMapping("/api/parking/availability")
+    public List<ParkingAvailabilityDto> getAllParkingAvailability() {
+        return availabilityService.getAll();
     }
 }

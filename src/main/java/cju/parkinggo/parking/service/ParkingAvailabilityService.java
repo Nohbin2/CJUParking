@@ -7,6 +7,8 @@ import cju.parkinggo.parking.repository.ParkingAvailabilityRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ParkingAvailabilityService {
@@ -56,5 +58,14 @@ public class ParkingAvailabilityService {
                 availability.getEmptySpots(),
                 availability.getUpdatedAt()
         );
+    }
+    public List<ParkingAvailabilityDto> getAll() {
+        List<ParkingAvailability> availabilities = availabilityRepository.findAll();
+        return availabilities.stream()
+                .map(a -> new ParkingAvailabilityDto(
+                        a.getParking().getId(),
+                        a.getEmptySpots(),
+                        a.getUpdatedAt()))
+                .collect(Collectors.toList());
     }
 }
