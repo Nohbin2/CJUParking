@@ -186,7 +186,7 @@ async function updateParking() {
 
 async function deleteParking() {
   const id = document.getElementById('deleteId').value;
-  const res = await fetch(`${BASE_URL}/api/parking/availability/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/parking/${id}`, {
     method: 'DELETE'
   });
   if (res.ok) {
