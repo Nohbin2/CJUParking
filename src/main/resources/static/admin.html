@@ -4,92 +4,165 @@
     <meta charset="UTF-8" />
     <title>주차장 관리자 페이지</title>
     <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 20px;
-    }
-    h2 {
-      margin-bottom: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 40px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-    }
-    input {
-      width: 90%;
-      padding: 5px;
-    }
-    button {
-      padding: 6px 12px;
-      cursor: pointer;
-    }
+    body { font-family: 'Segoe UI', sans-serif; margin: 20px; }
+    h2, h3 { margin-bottom: 16px; }
+    input, select { padding: 6px; margin: 4px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    button { padding: 6px 12px; margin: 2px; cursor: pointer; }
   </style>
 </head>
 <body>
-<h2>주차장 정보 관리자</h2>
+<h2>🅿️ 주차장 관리자 대시보드</h2>
+
+<script>
+    const isAdmin = prompt("관리자 비밀번호를 입력하세요") === "admin1234";
+    if (!isAdmin) {
+      document.body.innerHTML = '<h2>접근 권한이 없습니다.</h2>';
+      throw new Error("접근 거부됨");
+    }
+  </script>
+
+<h3>🔍 주차장 검색</h3>
+<input type="text" id="searchInput" placeholder="주차장 이름 검색" oninput="loadParkingList()" />
+
+<h3>➕ 주차장 추가</h3>
+<form onsubmit="addParking(); return false;">
+    <input id="addParkingName" placeholder="parkingName (고유값)" required />
+    <input id="addName" placeholder="표시 이름 (name)" required />
+    <input id="addLocation" placeholder="위치" required />
+    <input id="addSpots" type="number" placeholder="총 자리 수" required />
+    <input id="addEmptySpots" type="number" placeholder="빈 자리 수" required />
+    <button type="submit">추가</button>
+</form>
+
+<h3>📋 전체 주차장 목록</h3>
 <table>
     <thead>
     <tr>
-        <th>주차장 이름 (parkingName)</th>
-        <th>표시 이름 (name)</th>
-        <th>위치 (location)</th>
-        <th>총 자리수</th>
-        <th>빈 자리수</th>
-        <th>저장</th>
+        <th>parkingName</th>
+        <th>name</th>
+        <th>location</th>
+        <th>총 자리</th>
+        <th>빈 자리</th>
+        <th>수정/삭제</th>
     </tr>
     </thead>
     <tbody id="parking-table-body"></tbody>
 </table>
 
+<h3>✏️ ID로 주차장 수정</h3>
+<form onsubmit="updateById(); return false;">
+    <input id="updateId" type="number" placeholder="수정할 주차장 ID" required />
+    <input id="updateName" placeholder="변경할 name" required />
+    <input id="updateLocation" placeholder="변경할 location" required />
+    <input id="updateSpots" type="number" placeholder="변경할 총 자리 수" required />
+    <input id="updateEmptySpots" type="number" placeholder="변경할 빈 자리 수" required />
+    <button type="submit">ID 기준 수정</button>
+</form>
+
+<h3>🗑️ ID로 주차장 삭제</h3>
+<form onsubmit="deleteById(); return false;">
+    <input id="deleteByIdInput" type="number" placeholder="삭제할 주차장 ID" required />
+    <button type="submit">ID 기준 삭제</button>
+</form>
+
 <script>
     const API_BASE = 'http://localhost:8080/api/parking';
 
-    // 주차장 목록 불러오기
     async function loadParkingList() {
       const res = await fetch(API_BASE);
       const data = await res.json();
+      const search = document.getElementById('searchInput').value.toLowerCase();
+
       const tbody = document.getElementById('parking-table-body');
       tbody.innerHTML = '';
 
-      data.forEach(p => {
+      data.filter(p => !search || p.parkingName.toLowerCase().includes(search)).forEach(p => {
         const row = document.createElement('tr');
         row.innerHTML = `
           <td>${p.parkingName}</td>
           <td><input id="name-${p.parkingName}" value="${p.name ?? ''}" /></td>
           <td><input id="location-${p.parkingName}" value="${p.location ?? ''}" /></td>
-          <td>${p.spots}</td>
-          <td>${p.emptySpots}</td>
-          <td><button onclick="save('${p.parkingName}')">저장</button></td>
+          <td><input id="spots-${p.parkingName}" type="number" value="${p.spots}" /></td>
+          <td><input id="emptySpots-${p.parkingName}" type="number" value="${p.emptySpots}" /></td>
+          <td>
+            <button onclick="save('${p.parkingName}')">저장</button>
+            <button onclick="remove('${p.parkingName}')">삭제</button>
+          </td>
         `;
         tbody.appendChild(row);
       });
     }
 
-    // 저장 요청 보내기
     async function save(parkingName) {
       const name = document.getElementById(`name-${parkingName}`).value;
       const location = document.getElementById(`location-${parkingName}`).value;
+      const spots = document.getElementById(`spots-${parkingName}`).value;
+      const emptySpots = document.getElementById(`emptySpots-${parkingName}`).value;
 
       const res = await fetch(`${API_BASE}/name/${encodeURIComponent(parkingName)}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, location })
+        body: JSON.stringify({ name, location, spots, emptySpots })
       });
 
-      if (res.ok) {
-        alert(`"${parkingName}" 정보가 수정되었습니다.`);
-      } else {
-        alert(`수정 실패: ${parkingName}`);
-      }
+      alert(res.ok ? `\"${parkingName}\" 수정 완료` : `수정 실패: ${parkingName}`);
+      loadParkingList();
     }
 
-    // 페이지 로딩 시 데이터 불러오기
+    async function remove(parkingName) {
+      if (!confirm(`${parkingName}을(를) 정말 삭제하시겠습니까?`)) return;
+      const res = await fetch(`${API_BASE}/name/${encodeURIComponent(parkingName)}`, { method: 'DELETE' });
+      alert(res.ok ? `삭제 완료: ${parkingName}` : `삭제 실패`);
+      loadParkingList();
+    }
+
+    async function addParking() {
+      const body = {
+        parkingName: document.getElementById('addParkingName').value,
+        name: document.getElementById('addName').value,
+        location: document.getElementById('addLocation').value,
+        spots: parseInt(document.getElementById('addSpots').value),
+        emptySpots: parseInt(document.getElementById('addEmptySpots').value),
+      };
+
+      const res = await fetch(`${API_BASE}/add`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      alert(res.ok ? '추가 완료' : '추가 실패');
+      loadParkingList();
+    }
+
+    async function updateById() {
+      const id = document.getElementById('updateId').value;
+      const body = {
+        name: document.getElementById('updateName').value,
+        location: document.getElementById('updateLocation').value,
+        spots: parseInt(document.getElementById('updateSpots').value),
+        emptySpots: parseInt(document.getElementById('updateEmptySpots').value),
+      };
+
+      const res = await fetch(`${API_BASE}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      alert(res.ok ? `ID ${id} 수정 완료` : `수정 실패: ID ${id}`);
+      loadParkingList();
+    }
+
+    async function deleteById() {
+      const id = document.getElementById('deleteByIdInput').value;
+      const res = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
+      alert(res.ok ? `ID ${id} 삭제 완료` : `삭제 실패: ID ${id}`);
+      loadParkingList();
+    }
+
     loadParkingList();
   </script>
 </body>
