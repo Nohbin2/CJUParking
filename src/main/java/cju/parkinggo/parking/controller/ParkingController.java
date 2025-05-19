@@ -2,6 +2,8 @@ package cju.parkinggo.parking.controller;
 
 import cju.parkinggo.parking.dto.ParkingDto;
 import cju.parkinggo.parking.dto.ParkingStatusDto;
+import cju.parkinggo.parking.entity.Parking;
+import cju.parkinggo.parking.repository.ParkingRepository;
 import cju.parkinggo.parking.service.ParkingService;
 import cju.parkinggo.parking.service.ParkingStatusService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,12 +12,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/parking")
 public class ParkingController {
 
     private final ParkingService parkingService;
+    private ParkingRepository parkingRepository;
 
     // 수동 생성자 주입
     @Autowired
@@ -60,6 +64,24 @@ public class ParkingController {
         public void receiveStatusFromAI(@RequestBody List<ParkingStatusDto> statusList) {
             parkingStatusService.updateStatus(statusList);
         }
+    }
+    @PutMapping("/name/{parkingName}")
+    public ResponseEntity<?> updateByParkingName(
+            @PathVariable String parkingName,
+            @RequestBody Map<String, String> body) {
+
+        // 주차장 검색
+        Parking parking = parkingRepository.findByParkingName(parkingName)
+                .orElseThrow(() -> new RuntimeException("해당 주차장이 존재하지 않습니다: " + parkingName));
+
+        // 수정할 값 설정
+        parking.setName(body.get("name"));
+        parking.setLocation(body.get("location"));
+
+        // 저장
+        parkingRepository.save(parking);
+
+        return ResponseEntity.ok().body("수정 완료: " + parkingName);
     }
 
 }

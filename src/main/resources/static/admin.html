@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>주차장 관리자 페이지</title>
+    <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    input {
+      width: 90%;
+      padding: 5px;
+    }
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<h2>주차장 정보 관리자</h2>
+<table>
+    <thead>
+    <tr>
+        <th>주차장 이름 (parkingName)</th>
+        <th>표시 이름 (name)</th>
+        <th>위치 (location)</th>
+        <th>총 자리수</th>
+        <th>빈 자리수</th>
+        <th>저장</th>
+    </tr>
+    </thead>
+    <tbody id="parking-table-body"></tbody>
+</table>
+
+<script>
+    const API_BASE = 'http://localhost:8080/api/parking';
+
+    // 주차장 목록 불러오기
+    async function loadParkingList() {
+      const res = await fetch(API_BASE);
+      const data = await res.json();
+      const tbody = document.getElementById('parking-table-body');
+      tbody.innerHTML = '';
+
+      data.forEach(p => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${p.parkingName}</td>
+          <td><input id="name-${p.parkingName}" value="${p.name ?? ''}" /></td>
+          <td><input id="location-${p.parkingName}" value="${p.location ?? ''}" /></td>
+          <td>${p.spots}</td>
+          <td>${p.emptySpots}</td>
+          <td><button onclick="save('${p.parkingName}')">저장</button></td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    // 저장 요청 보내기
+    async function save(parkingName) {
+      const name = document.getElementById(`name-${parkingName}`).value;
+      const location = document.getElementById(`location-${parkingName}`).value;
+
+      const res = await fetch(`${API_BASE}/name/${encodeURIComponent(parkingName)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, location })
+      });
+
+      if (res.ok) {
+        alert(`"${parkingName}" 정보가 수정되었습니다.`);
+      } else {
+        alert(`수정 실패: ${parkingName}`);
+      }
+    }
+
+    // 페이지 로딩 시 데이터 불러오기
+    loadParkingList();
+  </script>
+</body>
+</html>
