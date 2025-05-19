@@ -1,7 +1,9 @@
 package cju.parkinggo.parking.controller;
 
 import cju.parkinggo.parking.dto.ParkingDto;
+import cju.parkinggo.parking.dto.ParkingStatusDto;
 import cju.parkinggo.parking.service.ParkingService;
+import cju.parkinggo.parking.service.ParkingStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -42,4 +44,22 @@ public class ParkingController {
         parkingService.deleteParking(id);
         return ResponseEntity.noContent().build();
     }
+
+    @RestController
+    @RequestMapping("/api/parking/status")
+    public class ParkingStatusController {
+
+        private final ParkingStatusService parkingStatusService;
+
+        @Autowired
+        public ParkingStatusController(ParkingStatusService parkingStatusService) {
+            this.parkingStatusService = parkingStatusService;
+        }
+
+        @PostMapping
+        public void receiveStatusFromAI(@RequestBody List<ParkingStatusDto> statusList) {
+            parkingStatusService.updateStatus(statusList);
+        }
+    }
+
 }
