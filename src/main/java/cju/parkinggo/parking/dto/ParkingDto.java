@@ -1,35 +1,47 @@
 package cju.parkinggo.parking.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 public class ParkingDto {
+
     private Long id;
+    private String parkingName;
     private String name;
-    private String location;
+    private String address;
+    private double latitude;
+    private double longitude;
     private int totalSpots;
 
-    public ParkingDto(Long id, String name, String location, int totalSpots) {
+    public ParkingDto() {}
+
+    public ParkingDto(Long id, String parkingName, String name, String address,
+                      double latitude, double longitude, int totalSpots) {
         this.id = id;
+        this.parkingName = parkingName;
         this.name = name;
-        this.location = location;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.totalSpots = totalSpots;
     }
 
-    // Getter 메서드 추가
-    public Long getId() {
-        return id;
-    }
+    // Getter & Setter
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
+    public String getParkingName() { return parkingName; }
+    public void setParkingName(String parkingName) { this.parkingName = parkingName; }
 
-    public String getLocation() {
-        return location;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public int getTotalSpots() {
-        return totalSpots;
-    }
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public double getLatitude() { return latitude; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+
+    public double getLongitude() { return longitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    public int getTotalSpots() { return totalSpots; }
+    public void setTotalSpots(int totalSpots) { this.totalSpots = totalSpots; }
 }

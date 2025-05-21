@@ -1,15 +1,13 @@
 package cju.parkinggo.parking.controller;
 
 import cju.parkinggo.parking.dto.ParkingDto;
-import cju.parkinggo.parking.dto.ParkingStatusDto;
 import cju.parkinggo.parking.entity.Parking;
 import cju.parkinggo.parking.repository.ParkingRepository;
 import cju.parkinggo.parking.service.ParkingService;
-import cju.parkinggo.parking.service.ParkingStatusService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,17 +17,17 @@ import java.util.Map;
 public class ParkingController {
 
     private final ParkingService parkingService;
-    private ParkingRepository parkingRepository;
+    private final ParkingRepository parkingRepository;
 
-    // 수동 생성자 주입
     @Autowired
-    public ParkingController(ParkingService parkingService) {
+    public ParkingController(ParkingService parkingService, ParkingRepository parkingRepository) {
         this.parkingService = parkingService;
+        this.parkingRepository = parkingRepository;
     }
 
     @GetMapping("/{id}")
-    public String getParking(@PathVariable Long id) {
-        return parkingService.getParking(id).toString();
+    public ResponseEntity<ParkingDto> getParking(@PathVariable Long id) {
+        return ResponseEntity.ok(parkingService.getParking(id));
     }
 
     @PostMapping
@@ -49,39 +47,22 @@ public class ParkingController {
         return ResponseEntity.noContent().build();
     }
 
-    @RestController
-    @RequestMapping("/api/parking/status")
-    public class ParkingStatusController {
-
-        private final ParkingStatusService parkingStatusService;
-
-        @Autowired
-        public ParkingStatusController(ParkingStatusService parkingStatusService) {
-            this.parkingStatusService = parkingStatusService;
-        }
-
-        @PostMapping
-        public void receiveStatusFromAI(@RequestBody List<ParkingStatusDto> statusList) {
-            parkingStatusService.updateStatus(statusList);
-        }
-    }
     @PutMapping("/name/{parkingName}")
     public ResponseEntity<?> updateByParkingName(
             @PathVariable String parkingName,
-            @RequestBody Map<String, String> body) {
+            @RequestBody Map<String, Object> body) {
 
-        // 주차장 검색
         Parking parking = parkingRepository.findByParkingName(parkingName)
                 .orElseThrow(() -> new RuntimeException("해당 주차장이 존재하지 않습니다: " + parkingName));
 
-        // 수정할 값 설정
-        parking.setName(body.get("name"));
-        parking.setLocation(body.get("location"));
+        if (body.containsKey("name")) parking.setName((String) body.get("name"));
+        if (body.containsKey("address")) parking.setAddress((String) body.get("address"));
+        if (body.containsKey("latitude")) parking.setLatitude(Double.parseDouble(body.get("latitude").toString()));
+        if (body.containsKey("longitude")) parking.setLongitude(Double.parseDouble(body.get("longitude").toString()));
+        if (body.containsKey("totalSpots")) parking.setTotalSpots(Integer.parseInt(body.get("totalSpots").toString()));
 
-        // 저장
         parkingRepository.save(parking);
 
         return ResponseEntity.ok().body("수정 완료: " + parkingName);
     }
-
 }

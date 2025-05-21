@@ -28,37 +28,64 @@ public class ParkingService {
     public ParkingDto getParking(Long id) {
         Parking parking = parkingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("주차장 정보를 찾을 수 없습니다."));
-        return new ParkingDto(parking.getId(), parking.getName(), parking.getLocation(), parking.getTotalSpots());
+        return new ParkingDto(
+                parking.getId(),
+                parking.getParkingName(),
+                parking.getName(),
+                parking.getAddress(),
+                parking.getLatitude(),
+                parking.getLongitude(),
+                parking.getTotalSpots()
+        );
     }
 
     public ParkingDto createParking(ParkingDto dto) {
         // 1. Parking 저장
         Parking parking = new Parking();
+        parking.setParkingName(dto.getParkingName());
         parking.setName(dto.getName());
-        parking.setLocation(dto.getLocation());
+        parking.setAddress(dto.getAddress());
+        parking.setLatitude(dto.getLatitude());
+        parking.setLongitude(dto.getLongitude());
         parking.setTotalSpots(dto.getTotalSpots());
         parkingRepository.save(parking);
 
-        // 2. ParkingAvailability 초기화 → 빈자리 수는 totalSpots로 동일하게 설정하거나 0
+        // 2. ParkingAvailability 초기화
         ParkingAvailability availability = new ParkingAvailability(
                 parking,
-                0, // 초기 빈자리 수 0개
+                0, // 초기 빈자리 수
                 LocalDateTime.now()
         );
         availabilityRepository.save(availability);
 
-        return new ParkingDto(parking.getId(), parking.getName(), parking.getLocation(), parking.getTotalSpots());
+        return new ParkingDto(
+                parking.getId(),
+                parking.getParkingName(),
+                parking.getName(),
+                parking.getAddress(),
+                parking.getLatitude(),
+                parking.getLongitude(),
+                parking.getTotalSpots()
+        );
     }
 
     public List<ParkingDto> getAllParking() {
         return parkingRepository.findAll().stream()
-                .map(p -> new ParkingDto(p.getId(), p.getName(), p.getLocation(), p.getTotalSpots()))
+                .map(p -> new ParkingDto(
+                        p.getId(),
+                        p.getParkingName(),
+                        p.getName(),
+                        p.getAddress(),
+                        p.getLatitude(),
+                        p.getLongitude(),
+                        p.getTotalSpots()
+                ))
                 .collect(Collectors.toList());
     }
+
     public void deleteParking(Long id) {
         Parking parking = parkingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("주차장을 찾을 수 없습니다."));
-
         parkingRepository.delete(parking);
     }
 }

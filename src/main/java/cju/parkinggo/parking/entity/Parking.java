@@ -10,42 +10,45 @@ public class Parking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;  // 주차장 ID
-    private String parkingName; // 데이터셋 이름
-    private String name;  // 주차장 이름
-    private String location;  // 위치
-    private int totalSpots;  // 총 주차 공간 수
-    private int emptySpots;
 
-    // ✅ 연관된 ParkingAvailability 엔티티 목록 (삭제 시 cascade 처리)
+    private String parkingName; // 데이터셋 이름
+    private String name;        // 주차장 이름
+    private String address;     // 주소
+    private double latitude;    // 위도
+    private double longitude;   // 경도
+    private int totalSpots;     // 총 주차 공간 수
+
+    // ✅ 연관된 ParkingAvailability 엔티티 목록
     @OneToMany(mappedBy = "parking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ParkingAvailability> availabilities = new ArrayList<>();
 
     public Parking() {}
 
-    public Parking(String parkingName, int totalSpots, int emptySpots) {
+    public Parking(String parkingName, String name, String address, double latitude, double longitude, int totalSpots) {
         this.parkingName = parkingName;
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.totalSpots = totalSpots;
-        this.emptySpots = emptySpots;
     }
 
-
-    // Getter 메서드
+    // Getter & Setter
     public Long getId() { return id; }
-    public String getName() { return name; }
     public String getParkingName() { return parkingName; }
-    public String getLocation() { return location; }
+    public String getName() { return name; }
+    public String getAddress() { return address; }
+    public double getLatitude() { return latitude; }
+    public double getLongitude() { return longitude; }
     public int getTotalSpots() { return totalSpots; }
-    public int getEmptySpots() { return emptySpots; }
-
-    // Setter 메서드
-    public void setId(Long id) { this.id = id; }
-    public void setName(String name) { this.name = name; }
-    public void setParkingName(String parkingName) { this.parkingName = parkingName; }
-    public void setLocation(String location) { this.location = location; }
-    public void setTotalSpots(int totalSpots) { this.totalSpots = totalSpots; }
-    public void setEmptySpots(int emptySpots) { this.emptySpots = emptySpots; }
-
-    // 연관 리스트 접근자 (필요 시)
     public List<ParkingAvailability> getAvailabilities() { return availabilities; }
+
+    public void setId(Long id) { this.id = id; }
+    public void setParkingName(String parkingName) { this.parkingName = parkingName; }
+    public void setName(String name) { this.name = name; }
+    public void setAddress(String address) { this.address = address; }
+    public void setLatitude(double latitude) { this.latitude = latitude; }
+    public void setLongitude(double longitude) { this.longitude = longitude; }
+    public void setTotalSpots(int totalSpots) { this.totalSpots = totalSpots; }
     public void setAvailabilities(List<ParkingAvailability> availabilities) { this.availabilities = availabilities; }
 }

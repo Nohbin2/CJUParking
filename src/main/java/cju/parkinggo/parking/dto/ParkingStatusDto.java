@@ -2,8 +2,8 @@ package cju.parkinggo.parking.dto;
 
 public class ParkingStatusDto {
     private String parkingName;
-    private int totalSpots;         // 총 자리 수
-    private int emptySpots;    // 빈 자리 수
+    private int totalSpots;
+    private int emptySpots;
 
     public ParkingStatusDto() {}
 
@@ -21,10 +21,12 @@ public class ParkingStatusDto {
         this.parkingName = parkingName;
     }
 
-    public int getTotalSpots() { return totalSpots;
+    public int getTotalSpots() {
+        return totalSpots;
     }
 
-    public void setTotalSpots(int totalSpots) { this.totalSpots = totalSpots;
+    public void setTotalSpots(int totalSpots) {
+        this.totalSpots = totalSpots;
     }
 
     public int getEmptySpots() {
