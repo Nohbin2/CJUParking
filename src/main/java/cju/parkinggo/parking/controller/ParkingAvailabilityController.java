@@ -40,5 +40,9 @@ public class ParkingAvailabilityController {
     public List<ParkingAvailabilityDto> getAllParkingAvailability() {
         return availabilityService.getAll();
     }
+    @GetMapping("/latest")
+    public ResponseEntity<List<ParkingAvailabilityDto>> getLatestAvailabilityList() {
+        return ResponseEntity.ok(availabilityService.getLatestAvailabilityList());
+    }
 }
 

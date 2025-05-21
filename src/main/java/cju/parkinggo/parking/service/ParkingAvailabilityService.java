@@ -76,4 +76,9 @@ public class ParkingAvailabilityService {
         );
         availabilityRepository.save(availability);
     }
+    public List<ParkingAvailabilityDto> getLatestAvailabilityList() {
+        return availabilityRepository.findLatestAvailabilityPerParking().stream()
+                .map(ParkingAvailabilityDto::fromEntity)
+                .toList();
+    }
 }
