@@ -26,13 +26,10 @@ public class ParkingStatusController {
     @PostMapping
     public ResponseEntity<String> receiveStatus(@RequestBody List<ParkingStatusDto> updates) {
         for (ParkingStatusDto dto : updates) {
-            // parkingName으로 Parking 찾기
-            Parking parking = parkingRepository.findByParkingName(dto.getParkingName());
+            Parking parking = parkingRepository
+                    .findByParkingName(dto.getParkingName())
+                    .orElseThrow(() -> new RuntimeException("주차장 정보를 찾을 수 없습니다: " + dto.getParkingName()));
 
-            // 존재하지 않으면 무시하거나 로그 출력
-            if (parking == null) {
-                continue;
-            }
 
             // 총 자리 수 업데이트
             parking.setTotalSpots(dto.getTotalSpots());
