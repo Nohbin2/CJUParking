@@ -5,14 +5,10 @@ public class ParkingStatusDto {
     private int totalSpots;
     private int emptySpots;
 
+    // 기본 생성자
     public ParkingStatusDto() {}
 
-    public ParkingStatusDto(String parkingName, int totalSpots, int emptySpots) {
-        this.parkingName = parkingName;
-        this.totalSpots = totalSpots;
-        this.emptySpots = emptySpots;
-    }
-
+    // getter & setter
     public String getParkingName() {
         return parkingName;
     }
