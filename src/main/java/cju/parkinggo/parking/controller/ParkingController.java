@@ -65,4 +65,25 @@ public class ParkingController {
 
         return ResponseEntity.ok().body("수정 완료: " + parkingName);
     }
+    @PutMapping("/id/{id}")
+    public ResponseEntity<?> updateById(
+            @PathVariable Long id,
+            @RequestBody Parking updatedData) {
+
+        Parking parking = parkingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("해당 ID의 주차장이 존재하지 않습니다: " + id));
+
+        // 모든 필드 덮어쓰기
+        parking.setParkingName(updatedData.getParkingName());
+        parking.setName(updatedData.getName());
+        parking.setAddress(updatedData.getAddress());
+        parking.setLatitude(updatedData.getLatitude());
+        parking.setLongitude(updatedData.getLongitude());
+        parking.setTotalSpots(updatedData.getTotalSpots());
+
+        parkingRepository.save(parking);
+
+        return ResponseEntity.ok().body("수정 완료: ID " + id);
+    }
+
 }
