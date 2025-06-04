@@ -38,6 +38,13 @@
 			<version>3.3.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+
+
 		<!-- Lombok Dependency (provided) -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>

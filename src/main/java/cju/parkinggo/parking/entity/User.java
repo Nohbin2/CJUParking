@@ -9,18 +9,27 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class User{
+public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String username;
+    private String kakaoId;        // 카카오 유저 고유 ID
+    private String username;       // 닉네임
+    private String profileImage;   // 프로필 이미지 URL
+    private String fcmToken;       // FCM 토큰
 
-    private String fcmToken;
-
-    // 생성자 추가 가능
-    public User(String username, String fcmToken) {
+    public User(String kakaoId, String username, String profileImage, String fcmToken) {
+        this.kakaoId = kakaoId;
         this.username = username;
+        this.profileImage = profileImage;
         this.fcmToken = fcmToken;
+    }
+
+    public User(String kakaoId, String username, String profileImage) {
+        this.kakaoId = kakaoId;
+        this.username = username;
+        this.profileImage = profileImage;
     }
 }
