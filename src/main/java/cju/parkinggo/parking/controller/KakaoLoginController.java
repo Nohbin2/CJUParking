@@ -30,6 +30,7 @@ public class KakaoLoginController {
     @PostMapping("/login")
     public ResponseEntity<?> kakaoLogin(@RequestBody Map<String, String> codeMap) {
         String code = codeMap.get("code");
+        System.out.println("🔐 받은 code: " + code);
 
         // 1. accessToken 요청
         HttpHeaders tokenHeaders = new HttpHeaders();
