@@ -45,8 +45,16 @@ public class KakaoLoginController {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Map> tokenResponse = restTemplate.postForEntity(
                 "https://kauth.kakao.com/oauth/token", tokenRequest, Map.class);
-        String accessToken = (String) tokenResponse.getBody().get("access_token");
 
+        System.out.println("카카오 코드: " + code);
+        System.out.println("AccessToken 요청 응답: " + tokenResponse.getBody());
+
+        String accessToken = (String) tokenResponse.getBody().get("access_token");
+        if (accessToken == null) {
+            throw new RuntimeException("카카오 access token 발급 실패");
+        }
+
+        System.out.println("access_token = " + accessToken);
         // 2. 사용자 정보 요청
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
