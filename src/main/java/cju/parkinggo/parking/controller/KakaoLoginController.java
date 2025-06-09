@@ -41,6 +41,9 @@ public class KakaoLoginController {
         params.add("client_id", restApiKey);
         params.add("redirect_uri", redirectUri);
         params.add("code", code);
+        System.out.println("📩 redirect_uri: " + redirectUri);
+        System.out.println("🧾 client_id: " + restApiKey);
+        System.out.println("📦 POST body: " + params);
 
         HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, tokenHeaders);
         RestTemplate restTemplate = new RestTemplate();
