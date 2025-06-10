@@ -41,17 +41,11 @@ public class KakaoLoginController {
         params.add("client_id", restApiKey);
         params.add("redirect_uri", redirectUri);
         params.add("code", code);
-        System.out.println("📩 redirect_uri: " + redirectUri);
-        System.out.println("🧾 client_id: " + restApiKey);
-        System.out.println("📦 POST body: " + params);
 
         HttpEntity<MultiValueMap<String, String>> tokenRequest = new HttpEntity<>(params, tokenHeaders);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Map> tokenResponse = restTemplate.postForEntity(
                 "https://kauth.kakao.com/oauth/token", tokenRequest, Map.class);
-
-        System.out.println("카카오 코드: " + code);
-        System.out.println("AccessToken 요청 응답: " + tokenResponse.getBody());
 
         String accessToken = (String) tokenResponse.getBody().get("access_token");
         if (accessToken == null) {
@@ -81,12 +75,13 @@ public class KakaoLoginController {
         // 4. JWT 발급
         String jwt = jwtProvider.createToken(user.getId());
 
-        // 5. 결과 반환
+        // 5. 결과 반환 (⭐️ kakaoId 포함!)
         Map<String, Object> result = new HashMap<>();
         result.put("jwt", jwt);
         result.put("userId", user.getId());
         result.put("nickname", user.getUsername());
         result.put("profileImage", user.getProfileImage());
+        result.put("kakaoId", user.getKakaoId());   // ⭐️⭐️⭐️
 
         return ResponseEntity.ok(result);
     }

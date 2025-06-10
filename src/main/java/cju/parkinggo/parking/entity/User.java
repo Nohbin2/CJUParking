@@ -10,7 +10,13 @@ import lombok.*;
 @Table(name = "user")
 @Getter @Setter @NoArgsConstructor
 public class User {
+    public User(String kakaoId, String username, String profileImage) {
+        this.kakaoId = kakaoId;
+        this.username = username;
+        this.profileImage = profileImage;
+    }
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
     @Column(name = "kakao_id", nullable = false, unique = true)
