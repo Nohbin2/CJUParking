@@ -1,11 +1,8 @@
 package cju.parkinggo.parking.controller;
 
+import cju.parkinggo.parking.dto.ParkingFcmSendDto;
 import cju.parkinggo.parking.service.FcmService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/fcm")
@@ -18,13 +15,17 @@ public class FcmController {
     }
 
     @PostMapping("/send")
-    public String sendTestNotification(@RequestParam String token) {
+    public String sendParkingSpaceNotification(@RequestBody ParkingFcmSendDto dto) {
         try {
-            fcmService.sendNotification(token, "주차장 알림", "근처에 빈자리가 생겼습니다!");
-            return "알림 전송 완료";
+            String notificationTitle = "주차장 빈자리 알림";
+            String notificationBody = String.format("%s에 빈자리가 생겼습니다!", dto.getParkingLotName());
+
+            fcmService.sendNotification(dto.getToken(), notificationTitle, notificationBody);
+            return "알림 전송 완료: " + notificationBody;
         } catch (Exception e) {
             e.printStackTrace();
             return "알림 전송 실패: " + e.getMessage();
         }
     }
+
 }
