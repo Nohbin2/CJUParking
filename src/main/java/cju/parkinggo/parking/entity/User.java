@@ -1,36 +1,26 @@
 package cju.parkinggo.parking.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+/**
+ * 사용자 정보 및 FCM 토큰을 저장하는 엔티티
+ */
 @Entity
 @Table(name = "user")
-@Getter
-@Setter
-@NoArgsConstructor
+@Getter @Setter @NoArgsConstructor
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String kakaoId;        // 카카오 유저 고유 ID
-    private String username;       // 닉네임
-    private String profileImage;   // 프로필 이미지 URL
-    private String fcmToken;       // FCM 토큰
+    @Column(name = "kakao_id", nullable = false, unique = true)
+    private String kakaoId; // 카카오 고유 식별자
 
-    public User(String kakaoId, String username, String profileImage, String fcmToken) {
-        this.kakaoId = kakaoId;
-        this.username = username;
-        this.profileImage = profileImage;
-        this.fcmToken = fcmToken;
-    }
+    private String username; // 사용자 이름
 
-    public User(String kakaoId, String username, String profileImage) {
-        this.kakaoId = kakaoId;
-        this.username = username;
-        this.profileImage = profileImage;
-    }
+    @Column(name = "profile_image")
+    private String profileImage; // 카카오 프로필 이미지 URL
+
+    @Column(name = "fcm_token")
+    private String fcmToken; // FCM 알림 토큰
 }
