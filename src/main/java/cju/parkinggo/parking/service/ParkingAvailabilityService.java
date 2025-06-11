@@ -85,7 +85,13 @@ public class ParkingAvailabilityService {
 
             for (String token : tokens) {
                 try {
-                    fcmV1Service.sendNotification(token, "주차장 알림", "즐겨찾기한 주차장에 빈자리가 생겼습니다!");
+                    // 알림 보낼 때
+                    fcmV1Service.sendNotification(
+                            token,
+                            "주차장 알림",
+                            parking.getParkingName() + "에 빈자리가 생겼습니다!"
+                    );
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
