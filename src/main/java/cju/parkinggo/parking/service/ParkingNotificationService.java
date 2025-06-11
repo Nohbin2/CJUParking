@@ -21,17 +21,17 @@ public class ParkingNotificationService {
     private final ParkingRepository parkingRepository;
     private final FavoriteParkingRepository favoriteParkingRepository;
     private final UserRepository userRepository;
-    private final FcmService fcmService;
+    private final FcmV1Service fcmV1Service;
 
     public ParkingNotificationService(
             ParkingRepository parkingRepository,
             FavoriteParkingRepository favoriteParkingRepository,
             UserRepository userRepository,
-            FcmService fcmService) {
+            FcmV1Service fcmV1Service) {
         this.parkingRepository = parkingRepository;
         this.favoriteParkingRepository = favoriteParkingRepository;
         this.userRepository = userRepository;
-        this.fcmService = fcmService;
+        this.fcmV1Service = fcmV1Service;
     }
 
     /**
@@ -51,7 +51,7 @@ public class ParkingNotificationService {
                 String fcmToken = user.getFcmToken();
                 if (fcmToken != null && !fcmToken.isEmpty()) {
                     try {
-                        fcmService.sendNotification(
+                        fcmV1Service.sendNotification(
                                 fcmToken,
                                 "주차장 빈자리 알림",
                                 parkingLotName + "에 빈자리가 생겼습니다!"
