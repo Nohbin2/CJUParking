@@ -21,20 +21,21 @@ public class ParkingAvailabilityService {
     private final ParkingRepository parkingRepository;
     private final ParkingAvailabilityRepository availabilityRepository;
     private final FavoriteParkingRepository favoriteRepo;
-    private final UserRepository userRepository; // 추가
-    private final FcmService fcmService;
+    private final UserRepository userRepository;
+    private final FcmV1Service fcmV1Service;   // << 기존 FcmService 대신 FcmV1Service로!
 
     public ParkingAvailabilityService(
             ParkingRepository parkingRepository,
             ParkingAvailabilityRepository availabilityRepository,
             FavoriteParkingRepository favoriteRepo,
-            UserRepository userRepository, // 생성자에 추가
-            FcmService fcmService) {
+            UserRepository userRepository,
+            FcmV1Service fcmV1Service // << 생성자에 FcmV1Service 주입
+    ) {
         this.parkingRepository = parkingRepository;
         this.availabilityRepository = availabilityRepository;
         this.favoriteRepo = favoriteRepo;
         this.userRepository = userRepository;
-        this.fcmService = fcmService;
+        this.fcmV1Service = fcmV1Service; // << 필드 할당
     }
 
     // ✅ 주차장 ID로 가장 최신 빈자리 정보 조회
@@ -84,7 +85,8 @@ public class ParkingAvailabilityService {
 
             for (String token : tokens) {
                 try {
-                    fcmService.sendNotification(token, "주차장 알림", "즐겨찾기한 주차장에 빈자리가 생겼습니다!");
+                    // 기존 fcmService → fcmV1Service로!
+                    fcmV1Service.sendNotification(token, "주차장 알림", "즐겨찾기한 주차장에 빈자리가 생겼습니다!");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
