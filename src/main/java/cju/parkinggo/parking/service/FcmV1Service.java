@@ -5,17 +5,15 @@ import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 public class FcmV1Service {
 
-    // 반드시 실제 Firebase 프로젝트의 ID로 입력!
     @Value("${firebase.project-id}")
     private String projectId;
 
-    // 서비스 계정 키 경로 (src/main/resources 하위에 두는 것이 일반적)
     @Value("${firebase.service-account-file}")
     private String serviceAccountFile;
 
@@ -25,14 +23,19 @@ public class FcmV1Service {
     public void sendNotification(String targetToken, String title, String body) throws IOException {
         String apiUrl = "https://fcm.googleapis.com/v1/projects/" + projectId + "/messages:send";
 
-        // 1. 서비스 계정으로 AccessToken 얻기
+        // ✅ resources 폴더에서 리소스 스트림으로 파일 읽기 (배포/JAR 환경 호환)
+        InputStream serviceAccountStream = getClass().getClassLoader().getResourceAsStream(serviceAccountFile);
+        if (serviceAccountStream == null) {
+            throw new IOException("Firebase service account file not found: " + serviceAccountFile);
+        }
+
         GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new FileInputStream(serviceAccountFile))
+                .fromStream(serviceAccountStream)
                 .createScoped("https://www.googleapis.com/auth/cloud-platform");
         googleCredentials.refreshIfExpired();
         String accessToken = googleCredentials.getAccessToken().getTokenValue();
 
-        // 2. v1 메시지 바디 포맷 (필요시 data 항목 추가 가능)
+        // v1 메시지 바디 포맷
         String messageJson = "{"
                 + "\"message\":{"
                 +     "\"token\":\"" + targetToken + "\","
