@@ -8,6 +8,7 @@ import cju.parkinggo.parking.repository.ParkingRepository;
 import cju.parkinggo.parking.repository.UserRepository;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -79,4 +80,21 @@ public class FavoriteParkingController {
         favoriteParkingRepository.delete(favorite);
         return "즐겨찾기 해제 완료";
     }
+    /**
+     * [GET] /api/favorite/list
+     * 해당 사용자의 즐겨찾기 목록 반환
+     */
+    @GetMapping("/list")
+    public List<Parking> getFavoriteList(@RequestParam String kakaoId) {
+        Optional<User> userOpt = userRepository.findByKakaoId(kakaoId);
+        if (userOpt.isEmpty()) return List.of();
+
+        Long userId = userOpt.get().getId();
+        List<FavoriteParking> favoriteList = favoriteParkingRepository.findByUserId(userId);
+
+        // 즐겨찾기한 Parking 정보 반환
+        List<Long> parkingIds = favoriteList.stream().map(FavoriteParking::getParkingId).toList();
+        return parkingRepository.findAllById(parkingIds);
+    }
+
 }

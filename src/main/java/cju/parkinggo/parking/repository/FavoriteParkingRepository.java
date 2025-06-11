@@ -11,4 +11,7 @@ import java.util.List;
 public interface FavoriteParkingRepository extends JpaRepository<FavoriteParking, Long> {
     // 특정 주차장을 즐겨찾기한 모든 사용자 목록 조회
     List<FavoriteParking> findByParkingId(Long parkingId);
+    // 사용자별 즐겨찾기 목록
+    List<FavoriteParking> findByUserId(Long userId);
+
 }
