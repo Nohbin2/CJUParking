@@ -5,8 +5,9 @@ import okhttp3.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class FcmV1Service {
@@ -14,23 +15,20 @@ public class FcmV1Service {
     @Value("${firebase.project-id}")
     private String projectId;
 
-    @Value("${firebase.service-account-file}")
-    private String serviceAccountFile;
-
     /**
      * FCM v1 API로 단일 토큰에 푸시 발송
      */
     public void sendNotification(String targetToken, String title, String body) throws IOException {
         String apiUrl = "https://fcm.googleapis.com/v1/projects/" + projectId + "/messages:send";
 
-        // ✅ resources 폴더에서 리소스 스트림으로 파일 읽기 (배포/JAR 환경 호환)
-        InputStream serviceAccountStream = getClass().getClassLoader().getResourceAsStream(serviceAccountFile);
-        if (serviceAccountStream == null) {
-            throw new IOException("Firebase service account file not found: " + serviceAccountFile);
+        // ✅ 환경변수에서 서비스 계정 JSON 읽기
+        String serviceAccountJson = System.getenv("FIREBASE_SERVICE_ACCOUNT_JSON");
+        if (serviceAccountJson == null || serviceAccountJson.isBlank()) {
+            throw new IOException("FIREBASE_SERVICE_ACCOUNT_JSON 환경변수가 설정되지 않았습니다.");
         }
 
         GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(serviceAccountStream)
+                .fromStream(new ByteArrayInputStream(serviceAccountJson.getBytes(StandardCharsets.UTF_8)))
                 .createScoped("https://www.googleapis.com/auth/cloud-platform");
         googleCredentials.refreshIfExpired();
         String accessToken = googleCredentials.getAccessToken().getTokenValue();
