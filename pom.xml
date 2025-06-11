@@ -52,6 +52,13 @@
 			<artifactId>mariadb-java-client</artifactId>
 			<version>3.3.1</version>
 		</dependency>
+		<dependency>
+			<groupId>jakarta.annotation</groupId>
+			<artifactId>jakarta.annotation-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+
+
 
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -74,6 +81,13 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 			<version>3.4.4</version>
 		</dependency>
+		<!-- Spring Boot Test (JUnit 5 포함) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 
 		<!-- Spring Boot Starter -->
 		<dependency>
@@ -103,6 +117,16 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.17.0</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
