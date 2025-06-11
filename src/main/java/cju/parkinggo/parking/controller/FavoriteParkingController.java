@@ -32,7 +32,7 @@ public class FavoriteParkingController {
 
     /**
      * [POST] /api/favorite/add
-     * 즐겨찾기 추가 (user의 kakaoId, 주차장 이름)
+     * 즐겨찾기 추가 (user의 kakaoId, 주차장 이름).
      */
     @PostMapping("/add")
     public String addFavorite(@RequestParam String kakaoId, @RequestParam String parkingLotName) {
