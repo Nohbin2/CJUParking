@@ -1,12 +1,14 @@
 package cju.parkinggo.parking.service;
 
 import cju.parkinggo.parking.dto.ParkingAvailabilityDto;
+import cju.parkinggo.parking.entity.FavoriteParking;
 import cju.parkinggo.parking.entity.Parking;
 import cju.parkinggo.parking.entity.ParkingAvailability;
-import cju.parkinggo.parking.entity.ParkingSubscription;
+import cju.parkinggo.parking.entity.User;
+import cju.parkinggo.parking.repository.FavoriteParkingRepository;
 import cju.parkinggo.parking.repository.ParkingAvailabilityRepository;
 import cju.parkinggo.parking.repository.ParkingRepository;
-import cju.parkinggo.parking.repository.ParkingSubscriptionRepository;
+import cju.parkinggo.parking.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,16 +20,20 @@ public class ParkingAvailabilityService {
 
     private final ParkingRepository parkingRepository;
     private final ParkingAvailabilityRepository availabilityRepository;
-    private final ParkingSubscriptionRepository subscriptionRepo;
+    private final FavoriteParkingRepository favoriteRepo;
+    private final UserRepository userRepository; // 추가
     private final FcmService fcmService;
 
-    public ParkingAvailabilityService(ParkingRepository parkingRepository,
-                                      ParkingAvailabilityRepository availabilityRepository,
-                                      ParkingSubscriptionRepository subscriptionRepo,
-                                      FcmService fcmService) {
+    public ParkingAvailabilityService(
+            ParkingRepository parkingRepository,
+            ParkingAvailabilityRepository availabilityRepository,
+            FavoriteParkingRepository favoriteRepo,
+            UserRepository userRepository, // 생성자에 추가
+            FcmService fcmService) {
         this.parkingRepository = parkingRepository;
         this.availabilityRepository = availabilityRepository;
-        this.subscriptionRepo = subscriptionRepo;
+        this.favoriteRepo = favoriteRepo;
+        this.userRepository = userRepository;
         this.fcmService = fcmService;
     }
 
@@ -65,17 +71,20 @@ public class ParkingAvailabilityService {
         );
         availabilityRepository.save(availability);
 
-        // ✅ 빈자리 증가 시 알림 전송
+        // ✅ 빈자리 증가 시 즐겨찾기 유저에게 알림 전송
         if (emptySpots > previousSpots) {
-            List<ParkingSubscription> subscriptions = subscriptionRepo.findByParkingId(parkingId);
-            List<String> tokens = subscriptions.stream()
-                    .map(sub -> sub.getUser().getFcmToken())
+            List<FavoriteParking> favorites = favoriteRepo.findByParkingId(parkingId);
+            List<String> tokens = favorites.stream()
+                    .map(fav -> {
+                        User user = userRepository.findById(fav.getUserId()).orElse(null);
+                        return (user != null) ? user.getFcmToken() : null;
+                    })
                     .filter(token -> token != null && !token.isBlank())
                     .toList();
 
             for (String token : tokens) {
                 try {
-                    fcmService.sendNotification(token, "주차장 알림", "근처에 빈자리가 생겼습니다!");
+                    fcmService.sendNotification(token, "주차장 알림", "즐겨찾기한 주차장에 빈자리가 생겼습니다!");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
