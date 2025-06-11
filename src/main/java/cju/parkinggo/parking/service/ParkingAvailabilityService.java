@@ -72,8 +72,8 @@ public class ParkingAvailabilityService {
         );
         availabilityRepository.save(availability);
 
-        // ✅ 빈자리 증가 시 즐겨찾기 유저에게 알림 전송
-        if (emptySpots > previousSpots) {
+        // ✅ 빈자리가 0에서 1 이상으로 변할 때만 알림 전송
+        if (previousSpots == 0 && emptySpots > 0) {
             List<FavoriteParking> favorites = favoriteRepo.findByParkingId(parkingId);
             List<String> tokens = favorites.stream()
                     .map(fav -> {
@@ -85,7 +85,6 @@ public class ParkingAvailabilityService {
 
             for (String token : tokens) {
                 try {
-                    // 기존 fcmService → fcmV1Service로!
                     fcmV1Service.sendNotification(token, "주차장 알림", "즐겨찾기한 주차장에 빈자리가 생겼습니다!");
                 } catch (Exception e) {
                     e.printStackTrace();
