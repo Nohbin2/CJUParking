@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+</head>
+<body>
+<p>앱으로 돌아가는 중입니다...</p>
+<script>
+    const query = new URLSearchParams(window.location.search);
+    const code = query.get('code');
+
+    if (code) {
+      setTimeout(() => {
+        window.location.href = `parking://oauth/callback?code=${code}`;
+      }, 500); // 딥링크 처리 유예시간 (일부 브라우저 대응)
+    } else {
+      document.body.innerHTML = "카카오 로그인에 실패했습니다.";
+    }
+  </script>
+</body>
+</html>

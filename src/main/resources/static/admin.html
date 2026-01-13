@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>어드민 주차장 관리</title>
+    <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #f0f4f8;
+      padding: 30px;
+    }
+    h1 {
+      color: #2c3e50;
+    }
+    .container {
+      display: flex;
+      flex-direction: row;
+      gap: 40px;
+    }
+    .panel, .result-panel {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+    }
+    input, button, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    pre {
+      background: #ecf0f1;
+      padding: 10px;
+      border-radius: 6px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+<h1>ParkingGo - 어드민 주차장 관리</h1>
+<div class="container">
+    <div class="panel">
+        <h2>📌 주차장 데이터 관리</h2>
+        <button onclick="getAll()">전체 목록 조회</button>
+
+        <h3>주차장 추가</h3>
+        <input type="text" id="addName" placeholder="주차장 이름">
+        <input type="text" id="addLocation" placeholder="위치">
+        <input type="number" id="addTotal" placeholder="총 자리 수">
+        <input type="number" id="addEmpty" placeholder="빈자리 수">
+        <input type="text" id="addParkingName" placeholder="표시용 이름 (옵션)">
+        <button onclick="createParking()">추가</button>
+
+        <h3>주차장 수정</h3>
+        <input type="number" id="updateId" placeholder="수정할 주차장 ID">
+        <input type="number" id="updateEmpty" placeholder="새 빈자리 수">
+        <button onclick="updateAvailability()">빈자리 수정</button>
+
+        <h3>주차장 삭제</h3>
+        <input type="number" id="deleteId" placeholder="삭제할 주차장 ID">
+        <button onclick="deleteParking()">삭제</button>
+    </div>
+
+    <div class="result-panel">
+        <h2>📋 결과</h2>
+        <pre id="result">데이터가 여기에 표시됩니다</pre>
+    </div>
+</div>
+
+<script>
+const BASE = 'https://port-0-backend-m9z3p2p78bad92ca.sel4.cloudtype.app';
+
+async function getAll() {
+  const res1 = await fetch(`${BASE}/api/parking`);
+  const res2 = await fetch(`${BASE}/api/parking/availability`);
+  const data1 = await res1.json();
+  const data2 = await res2.json();
+  show({ parking: data1, availability: data2 });
+}
+
+async function createParking() {
+  const body = {
+    name: document.getElementById('addName').value,
+    location: document.getElementById('addLocation').value,
+    totalSpots: Number(document.getElementById('addTotal').value),
+    emptySpots: Number(document.getElementById('addEmpty').value),
+    parkingName: document.getElementById('addParkingName').value
+  };
+  const res = await fetch(`${BASE}/api/parking/full`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  show(await res.json());
+}
+
+async function updateAvailability() {
+  const id = document.getElementById('updateId').value;
+  const empty = document.getElementById('updateEmpty').value;
+  const res = await fetch(`${BASE}/api/parking/availability/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ parkingId: Number(id), emptySpots: Number(empty) })
+  });
+  show(await res.json());
+}
+
+async function deleteParking() {
+  const id = document.getElementById('deleteId').value;
+  const res = await fetch(`${BASE}/api/parking/${id}`, { method: 'DELETE' });
+  if (res.ok) show({ message: `주차장 ID ${id} 삭제 완료` });
+  else show(await res.json());
+}
+
+function show(data) {
+  document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+}
+</script>
+</body>
+</html>
